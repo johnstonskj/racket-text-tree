@@ -1,0 +1,10 @@
+#lang info
+(define collection "text-tree")
+(define deps '("base"))
+(define build-deps '("scribble-lib" "racket-doc" "sandbox-lib" "rackunit-lib"))
+(define scribblings '(("scribblings/text-tree.scrbl" ())))
+(define test-omit-paths '("scribblings"))
+(define pkg-desc "Simple interface to output tree-structured data.")
+(define version "1.0")
+(define pkg-authors '(johnstonskj))
+(define license 'Apache-2.0)
