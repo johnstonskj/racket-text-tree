@@ -54,8 +54,13 @@ Results in the following:
 
 **Version 1.1**
 
-This release fixes all the known issues with nested structure handling. It also expands the allowed types by using
-the `sequence` and `dictionary` generics to abstract over various concrete types. 
+This release fixes all the known issues with nested structure handling.
+
+* Feature: it also expands the allowed types by using the `sequence` and `dictionary` generics to
+  abstract over various concrete types.
+* Feature: add a parameter for the name of empty sequences and dictionaries.
+* Tests: test cases expanded, more required.
+* Docs: all docs completed, more examples would be good.
 
 **Version 1.0**
 
