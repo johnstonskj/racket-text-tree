@@ -158,4 +158,4 @@
 
 (define (text-tree->string value)
   (with-output-to-string
-    (λ (v) (write-text-tree value))))
+    (λ () (write-text-tree value))))
