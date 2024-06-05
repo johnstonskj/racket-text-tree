@@ -46,13 +46,33 @@
 "))
 
    (test-case
-    "input: list of list"
+    "input: list of list with empty"
     (check-output-equal?
      (list (list "date" "May 2024"))
-     "└── ()
+     "└── <empty>
     ├── date
     └── May 2024
 "))
+
+   (test-case
+       "input: list of list with custom empty"
+     (parameterize ((unnamed-sequence-string "nil"))
+       (check-output-equal?
+        (list (list "date" "May 2024"))
+        "└── nil
+    ├── date
+    └── May 2024
+")))
+
+   (test-case
+       "input: list of list with empty proc"
+     (parameterize ((unnamed-sequence-string (λ (_) "yay!")))
+       (check-output-equal?
+        (list (list "date" "May 2024"))
+        "└── yay!
+    ├── date
+    └── May 2024
+")))
 
    (test-case
     "input: hash"
@@ -80,18 +100,38 @@
 └── name
     └── me
 "))
+
+   (test-case
+       "input: hash with hashes and sequences"
+     (check-output-equal?
+      (make-hash
+       `((a . 1)
+         (b . (2 3))
+         (c 2 3)
+         (d . ,(make-hash
+                '((x . 99)
+                  (y . ((45 46 47)))
+                  (z . 79))))))
+      "├── a
+│   └── 1
+├── b
+│   ├── 2
+│   └── 3
+├── c
+│   ├── 2
+│   └── 3
+└── d
+    ├── x
+    │   └── 99
+    ├── y
+    │   └── <empty>
+    │       ├── 45
+    │       ├── 46
+    │       └── 47
+    └── z
+        └── 79
+"))
    ))
-
-;; TODO: fix this ...
-
-;; (make-hash
-;;  `((collection . "text-tree")
-;;    (deps base)
-;;    (build-deps scribble-lib racket-doc rackunit-lib)
-;;    (deps ,(make-hash '((deps base)
-;;                        (build-deps scribble-lib racket-doc rackunit-lib))))
-;;    (scribblings "scribblings/text-tree.scrbl")
-;;    (test-omit-paths "scribblings")))
 
 ;; -----------------------------------------------------------------------------------------------
 ;; Test Runner

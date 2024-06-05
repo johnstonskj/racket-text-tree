@@ -55,14 +55,27 @@ TBD
 A convenience wrapper around @racket[write-text-tree] that writes @racket[value] to, and returns, a string.
 }
 
-@defproc[(atom? [val any/c]) boolean?]{
+@defproc[#:kind "predicate"
+         (atom? [val any/c]) boolean?]{
 Returns @racket[#t] if the @racket[val] is one of @racket[boolean?], @racket[char?], @racket[number?],
-@racket[string?], or @racket[symbol?]. Atoms are written out using the @racket[~a] format function.
+@racket[string?], @racket[bytes], or @racket[symbol?]. Atoms are written out using the @racket[~a] format function.
 }
 
-@defthing[dotted-pair? contract?]{
+@defproc[#:kind "predicate"
+         (dotted-pair? [val any/c]) boolean?]{
 Returns @racket[#t] if the @racket[val] is an @italic{dotted} or @italic{improper} pair where the @racket[cdr] is not a
 list.
+}
+
+@defproc[#:kind "predicate"
+         (simple-dictionary? [val any/c]) boolean?]{
+Returns @racket[#t] if the @racket[val] is either a @racket[hash?] or a structure implementing @racket[gen:dict?].
+}
+
+@defproc[#:kind "predicate"
+         (simple-sequence? [val any/c]) boolean?]{
+Returns @racket[#t] if the @racket[val] is one of @racket[list?], @racket[vector?],
+@racket[flvector?], @racket[fxvector?], or @racket[set?].
 }
 
 @defthing[tree-input/c contract?]{
@@ -71,12 +84,12 @@ mutable lists, vectors, fixnum vectors, flonum vectors, hash tables, sets, and s
 
 @itemlist[
   @item{@racket[atom?] -- Individual value.}
-  @item{@racket[sequence/c] -- Where every member is a @racket[tree-input/c].}
-  @item{@racket[dict?] -- Where every key is a @racket[atom?] and every value is a @racket[tree-input/c].}
+  @item{@racket[simple-sequence?] -- Where every member is a @racket[tree-input/c].}
+  @item{@racket[simple-sequence?] -- Where every key is a @racket[atom?] and every value is a @racket[tree-input/c].}
 ]
 }
 
-@section[]{Line Drawing}
+@section[]{Parameters}
 
 @defparam[tree-representation-line-chars
           line-chars
@@ -94,7 +107,7 @@ whereas the value @racket[ascii-line-chars] may be more broadly supported but is
 }
 
 @defthing[ascii-line-chars (list/c char? char? char? char? char?)]{
-TBD
+A set of simple ASCII characters for a low-fi tree.
 
 @examples[#:eval example-eval
 (require racket/port)
@@ -112,5 +125,46 @@ TBD
 }
 
 @defthing[unicode-line-chars (list/c char? char? char? char? char?)]{
-TBD
+A set of Unicode line-drawing characters for a higher fidelity tree.
+
+@examples[#:eval example-eval
+(require racket/port)
+
+(parameterize ((tree-representation-line-chars unicode-line-chars))
+(displayln
+  (with-output-to-string
+    (λ () (write-text-tree
+            (make-hash
+              '((collection . "text-tree")
+                (deps "base")
+                (build-deps "scribble-lib" "racket-doc" "rackunit-lib")
+                (license . Apache-2.0))))))))
+]
+}
+
+@defparam[unnamed-sequence-string
+          unnamed
+          (or/c string?
+                (-> (or/c simple-dictionary? simple-sequence?)
+                    string?))
+          #:value "<empty>"]{
+This parameter determines the string to use as the root value for anonymous sequences and dictionaries.
+
+@examples[#:eval example-eval
+(displayln (text-tree->string (list (list "date" "May 2024"))))
+]
+
+@examples[#:eval example-eval
+(parameterize ((unnamed-sequence-string "nil"))
+  (displayln (text-tree->string (list (list "date" "May 2024")))))
+]
+
+@examples[#:eval example-eval
+(define (name-for-unnamed val)
+  (cond ((list? val) "empty?")
+        ((hash? val) "hash-empty?")))
+
+(parameterize ((unnamed-sequence-string name-for-unnamed))
+  (displayln (text-tree->string (list (list "date" "May 2024")))))
+]
 }
